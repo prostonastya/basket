@@ -19,8 +19,7 @@
             <input type="date">
             <p>Номер мобильного телефона заказчика</p>
             <input type="tel" placeholder="(000)-000-00-00">
-            <button class="addTel">+</button>
-            <!-- <input type="button" value="+" >    -->
+            <button class="addTel">+</button>           
             <p class="fio">Ф.И.О. заказчика</p>
             <input type="text" placeholder="Введите Ф.И.О.">
             <h4>Транспортировка</h4>
@@ -38,8 +37,7 @@
             <p>Добавить товар в корзину</p>
             <input type="button" value="+" class="addGood">
                 <hr>          
-            <p class="totalText">Общая сумма по заказу</p>
-            <button class="calcAll">Рассчитать стоимость</button>
+            <p class="totalText">Общая сумма по заказу (При заказе от 1000 грн. автоматически скидка 7%)</p>            
             <input type="number" name="total" class="total">
             
         </form>
@@ -71,8 +69,6 @@ addTel.addEventListener('click', (e) => {
     newTel.setAttribute('placeholder', 'дополнительный телефон');    
     form.insertBefore(newTel, fio);
 })
-
-
 
 function showForm(){
     order.classList.toggle('visible');
@@ -110,7 +106,7 @@ function goodsInfo(){
 
     var deleteGoodsBtn = createInputType('button', 'Удалить', 'deleteGood', 'deleteGood');
 
-    deleteGoodsBtn.setAttribute("onclick", "this.parentElement.remove()");    
+    deleteGoodsBtn.setAttribute("onclick", "this.parentElement.remove(); CalcAll()");    
     newContainer.appendChild(deleteGoodsBtn);
 
     var line = document.createElement('hr');
@@ -150,23 +146,15 @@ function goodsInfo(){
         divDesc.appendChild(quantity);
         divDesc.appendChild(quantityInput);
 
-
-
         var amount = document.createElement('p');
         amount.innerText = 'Сумма к оплате по товару';
         var amountInput = createInputType("number", "0", "amount", "amount");
+        
         divDesc.appendChild(amount);
         divDesc.appendChild(amountInput);
-
-        var calc = document.createElement('button');
-        calc.innerText = "Рассчитать стоимость";
-        calc.className = 'calc';
-        divDesc.insertBefore(calc, amountInput);
-        calc.onclick = function(e){
-            e.preventDefault();    
-            amountInput.value = (priceInput.value * quantityInput.value);
-        }       
-    
+       
+        priceInput.addEventListener('input', CalcOneStandart);
+        quantityInput.addEventListener('input', CalcOneStandart);
     });  
     
     input2.addEventListener('change', function(e){
@@ -175,7 +163,7 @@ function goodsInfo(){
             if (e.target.parentNode.childNodes[i].className == 'divDesc'){
                 e.target.parentNode.childNodes[i].remove();                      
             }
-        }       
+        }
 
         var divDesc = document.createElement('div');
         divDesc.className = "divDesc";
@@ -248,36 +236,45 @@ function goodsInfo(){
         var amount = document.createElement('p');
         amount.innerText = 'Сумма к оплате по товару';
         var amountInput = createInputType("number", "0", "amount", "amount");
+        amountInput.setAttribute("onchange", 'CalcAll(event)');
         divDesc.appendChild(amount);
         divDesc.appendChild(amountInput);
-
-        var calc = document.createElement('button');
-        calc.innerText = "Рассчитать стоимость";
-        calc.className = 'calc';
-        divDesc.insertBefore(calc, amountInput);
-        calc.onclick = function(e){
-            e.preventDefault();  
-            amountInput.value = (priceInput.value * quantityInput.value);
-        }       
- 
+               
+        priceInput.addEventListener('input', CalcOneExclusive);
+        quantityInput.addEventListener('input', CalcOneExclusive);
     });
 }
 
-
 var totalAmountList = document.getElementsByClassName('amount');
 var total = document.getElementsByClassName('total')[0];
-var calcAll = document.getElementsByClassName('calcAll')[0];
-var check = 0;
-calcAll.onclick = function(e){
-    e.preventDefault();
-    for (let i =0; i< totalAmountList.length; i++){
-    
-    check = +totalAmountList[i].value;
+
+
+function CalcAll(){
+    var sum = 0;
+    if (totalAmountList.length = 0){
+        total.value = 0;
     }
-    total.value = check;
+    for (let i=0; i<totalAmountList.length; i++){
+        sum += +totalAmountList[i].value;        
+        if(sum < 1000){
+            total.value = sum;
+        } else {
+            total.value = sum*0.93;
+        }
+          
+    }
 }
 
-
+// автоматический пересчет суммы за один Стандартный товар
+function CalcOneStandart(){        
+    event.target.parentNode.childNodes[7].value = event.target.parentNode.childNodes[3].value * event.target.parentNode.childNodes[5].value;
+    CalcAll();
+}
+// автоматический пересчет суммы за один Эксклюзивный товар
+function CalcOneExclusive(){  
+    event.target.parentNode.childNodes[23].value = event.target.parentNode.childNodes[19].value * event.target.parentNode.childNodes[21].value;
+    CalcAll();
+}
 
 </script>
 </body>
