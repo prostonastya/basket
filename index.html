@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HW5_dom</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    
+    <div class="busket"></div>
+    <div class="order">
+        <form name="myform" action="/" method="POST" class="form">
+            <h4>Общие</h4>
+            <p>Дата заказа</p>
+            <input type="date">
+            <p>Номер мобильного телефона заказчика</p>
+            <input type="tel" placeholder="(000)-000-00-00">
+            <button class="addTel">+</button>
+            <!-- <input type="button" value="+" >    -->
+            <p class="fio">Ф.И.О. заказчика</p>
+            <input type="text" placeholder="Введите Ф.И.О.">
+            <h4>Транспортировка</h4>
+            <p>Номер мобильного телефона получателя </p>
+            <input type="tel" placeholder="(000)-000-00-00">
+            <p>Грузоперевозчик</p>
+            <input type="radio" name="delivery" value="N_Poshta"> Новая почта<Br>
+            <input type="radio" name="delivery" value="Intaim"> Интайм<Br>
+            <input type="radio" name="delivery" value="Avtoluks"> Автолюкс<Br>
+            <input type="radio" name="delivery" value="pochta_Ukr"> Почта Украины<Br>
+            <p>Город Доставки</p>
+            <input type="text" placeholder="Введите город доставки">
+            <p>Дата отгрузки</p>
+            <input type="text" placeholder="Введите город отгрузки">
+            <p>Добавить товар в корзину</p>
+            <input type="button" value="+" class="addGood">
+                <hr>          
+            <p class="totalText">Общая сумма по заказу</p>
+            <button class="calcAll">Рассчитать стоимость</button>
+            <input type="number" name="total" class="total">
+            
+        </form>
+    </div>
+
+<script>
+
+var busket = document.getElementsByClassName('busket')[0];
+var order = document.getElementsByClassName('order')[0];
+var form = document.getElementsByClassName('form')[0];
+var addTel = document.getElementsByClassName('addTel')[0];
+var fio = document.getElementsByClassName('fio')[0];
+var totalText = document.getElementsByClassName('totalText')[0];
+var addGood = document.getElementsByClassName('addGood');
+var addGoodsButton = createInputType('button', '+', 'addGood', 'addGood');
+
+var goodsType = document.getElementsByName('goods');
+var goodsEnv = document.getElementsByName('environment');
+var diameterInput;
+
+
+busket.addEventListener('click', showForm);
+addGood[0].addEventListener('click', goodsInfo);
+
+addTel.addEventListener('click', (e) => {
+    e.preventDefault();
+    var newTel = document.createElement('input');
+    newTel.type = 'tel';  
+    newTel.setAttribute('placeholder', 'дополнительный телефон');    
+    form.insertBefore(newTel, fio);
+})
+
+
+
+function showForm(){
+    order.classList.toggle('visible');
+}
+
+function createInputType(inputType, inputValue, inputName, className) {
+  var input = document.createElement('input');
+  input.type = inputType;  
+  input.value = inputValue;
+  input.name = inputName;
+  input.className = className;
+
+  return input;
+}
+
+function goodsInfo(){ 
+
+    // контейнер для нового товара
+    var newContainer = document.createElement('div');
+    newContainer.className = "newContainer";
+    form.insertBefore(newContainer, totalText);
+
+    var name = document.createElement('h4');
+    let input1 = createInputType("radio", "Standart", "goods", "type");
+    let input2 = createInputType("radio", "Exclusive", "goods", "type");
+    let text1 = document.createTextNode('Стандарт');
+    let text2 = document.createTextNode('Эксклюзив');        
+
+    name.innerText = 'Товар';
+    newContainer.appendChild(name);
+    newContainer.appendChild(input1);
+    newContainer.appendChild(text1);
+    newContainer.appendChild(input2);
+    newContainer.appendChild(text2);
+
+    var deleteGoodsBtn = createInputType('button', 'Удалить', 'deleteGood', 'deleteGood');
+
+    deleteGoodsBtn.setAttribute("onclick", "this.parentElement.remove()");    
+    newContainer.appendChild(deleteGoodsBtn);
+
+    var line = document.createElement('hr');
+    newContainer.appendChild(line);  
+
+    input1.addEventListener('change', function(e){        
+        
+        for(let i =0; i < e.target.parentNode.childNodes.length; i++) {
+            if (e.target.parentNode.childNodes[i].className == 'divDesc'){
+                e.target.parentNode.childNodes[i].remove();
+            }
+        }
+
+        var divDesc = document.createElement('div');
+        divDesc.className = "divDesc";   
+        
+        e.target.parentNode.insertBefore(divDesc, deleteGoodsBtn);
+               
+        var nameGoods = document.createElement('p');
+        var inputName = document.createElement('input');
+        nameGoods.innerText = 'Наименование';
+        inputName.type = "text";
+        inputName.placeholder="Введите наименование";
+        
+        divDesc.appendChild(nameGoods);
+        divDesc.appendChild(inputName);
+
+        var price = document.createElement('p');
+        price.innerText = 'Цена';    
+        var priceInput = createInputType("number", "0", "price", "price");    
+        divDesc.appendChild(price);
+        divDesc.appendChild(priceInput);
+
+        var quantity = document.createElement('p');
+        quantity.innerText = 'Кол-во товара';
+        var quantityInput = createInputType("number", "0", "quantity", "quantity");
+        divDesc.appendChild(quantity);
+        divDesc.appendChild(quantityInput);
+
+
+
+        var amount = document.createElement('p');
+        amount.innerText = 'Сумма к оплате по товару';
+        var amountInput = createInputType("number", "0", "amount", "amount");
+        divDesc.appendChild(amount);
+        divDesc.appendChild(amountInput);
+
+        var calc = document.createElement('button');
+        calc.innerText = "Рассчитать стоимость";
+        calc.className = 'calc';
+        divDesc.insertBefore(calc, amountInput);
+        calc.onclick = function(e){
+            e.preventDefault();    
+            amountInput.value = (priceInput.value * quantityInput.value);
+        }       
+    
+    });  
+    
+    input2.addEventListener('change', function(e){
+        
+        for(let i =0; i < e.target.parentNode.childNodes.length; i++) {
+            if (e.target.parentNode.childNodes[i].className == 'divDesc'){
+                e.target.parentNode.childNodes[i].remove();                      
+            }
+        }       
+
+        var divDesc = document.createElement('div');
+        divDesc.className = "divDesc";
+        e.target.parentNode.insertBefore(divDesc, deleteGoodsBtn);
+
+        var nameGoods = document.createElement('p');
+        var inputName = document.createElement('input');      
+        nameGoods.innerText = 'Наименование';
+        inputName.type = "text";
+        inputName.placeholder="Введите наименование";
+        
+        divDesc.appendChild(nameGoods);
+        divDesc.appendChild(inputName);
+
+        var environment = document.createElement('p');
+        environment.innerText = 'Рабочая среда';
+        divDesc.appendChild(environment);
+
+        var air = createInputType("radio", "air", "environment");
+        var airText = document.createTextNode('Воздух');
+        var water = createInputType("radio", "water", "environment");
+        var waterText = document.createTextNode('Вода');
+        var metal = createInputType("radio", "metal", "environment");
+        var metalText = document.createTextNode('Металл');
+
+        divDesc.appendChild(air);
+        divDesc.appendChild(airText);
+        divDesc.appendChild(water);
+        divDesc.appendChild(waterText);        
+        divDesc.appendChild(metal);
+        divDesc.appendChild(metalText);
+
+        var diameter = document.createElement('p');
+        diameter.innerText = 'Диаметр';
+        diameterInput = createInputType("range");        
+
+        divDesc.appendChild(diameter);
+        divDesc.appendChild(diameterInput);
+
+        var material = document.createElement('p');
+        material.innerText = 'Материал';
+
+        var material_1 = createInputType("radio", "black", "material");
+        var material_2 = createInputType("radio", "steel", "material");
+        var material_3 = createInputType("radio", "12Х18Н10Т", "material");
+        var material_1_Text = document.createTextNode('Черный');
+        var material_2_Text = document.createTextNode('Нержавейка');
+        var material_3_Text = document.createTextNode('12Х18Н10Т');
+
+        divDesc.appendChild(material);
+        divDesc.appendChild(material_1);
+        divDesc.appendChild(material_1_Text);
+        divDesc.appendChild(material_2);
+        divDesc.appendChild(material_2_Text);
+        divDesc.appendChild(material_3);
+        divDesc.appendChild(material_3_Text);
+
+        var price = document.createElement('p');
+        price.innerText = 'Цена';    
+        var priceInput = createInputType("number", "0", "price", "price");    
+        divDesc.appendChild(price);
+        divDesc.appendChild(priceInput);
+
+        var quantity = document.createElement('p');
+        quantity.innerText = 'Кол-во товара';
+        var quantityInput = createInputType("number", "0", "quantity", "quantity");
+        divDesc.appendChild(quantity);
+        divDesc.appendChild(quantityInput);
+
+        var amount = document.createElement('p');
+        amount.innerText = 'Сумма к оплате по товару';
+        var amountInput = createInputType("number", "0", "amount", "amount");
+        divDesc.appendChild(amount);
+        divDesc.appendChild(amountInput);
+
+        var calc = document.createElement('button');
+        calc.innerText = "Рассчитать стоимость";
+        calc.className = 'calc';
+        divDesc.insertBefore(calc, amountInput);
+        calc.onclick = function(e){
+            e.preventDefault();  
+            amountInput.value = (priceInput.value * quantityInput.value);
+        }       
+ 
+    });
+}
+
+
+var totalAmountList = document.getElementsByClassName('amount');
+var total = document.getElementsByClassName('total')[0];
+var calcAll = document.getElementsByClassName('calcAll')[0];
+var check = 0;
+calcAll.onclick = function(e){
+    e.preventDefault();
+    for (let i =0; i< totalAmountList.length; i++){
+    
+    check = +totalAmountList[i].value;
+    }
+    total.value = check;
+}
+
+
+
+</script>
+</body>
+</html>

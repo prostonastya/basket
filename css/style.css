@@ -1,0 +1,39 @@
+.busket{
+    width: 200px;
+    height: 200px;
+    background: url(../img/basket.png);
+}
+.order{
+    width: 500px;
+    min-height: 500px;
+    background: orangered;
+    padding: 20px;
+    display: none;
+}
+.order.visible{
+    display: block
+}
+.button{
+    width: 50px;
+    height: 50px;
+    background: blue;
+}
+
+.divDesc, .divEnv, .newContainer{
+    width: 100%;    
+}
+input[type="button"]{
+    display: block;
+    width: 100px;
+    height: 50px;
+    background: violet;
+    /* margin: 10px; */
+    margin: 10px auto;
+}
+.totalText{
+    font-size: 2em;
+}
+.calc, calcAll{
+    display: block;
+    margin-bottom: 10px;
+}
